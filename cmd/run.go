@@ -126,22 +126,21 @@ func runThread(threadIndex int, cfg *config.Config, client *httpclient.Client, u
 		result := client.DoRequest(
 			cfg.Request.Method,
 			cfg.Request.URL,
-			cfg.Request.Headers, // shared headers
-			userConfig.Headers, // user-specific headers
+			mergedHeaders,
 			cfg.Request.Body,
 		)
 
 		reqRecord := collector.RequestRecord{
 			RequestIndex:    1,
-			URL:            cfg.Request.URL,
-			Method:         cfg.Request.Method,
-			RequestHeaders: mergedHeaders,
-			RequestBody:    cfg.Request.Body,
-			ResponseStatus: result.ResponseStatus,
-			ResponseTimeMs: result.ResponseTimeMs,
+			URL:             cfg.Request.URL,
+			Method:          cfg.Request.Method,
+			RequestHeaders:  mergedHeaders,
+			RequestBody:     cfg.Request.Body,
+			ResponseStatus:  result.ResponseStatus,
+			ResponseTimeMs:  result.ResponseTimeMs,
 			ResponseHeaders: result.ResponseHeaders,
-			Success:        result.Success,
-			Error:          result.Error,
+			Success:         result.Success,
+			Error:           result.Error,
 		}
 
 		coll.AddLoopResult(idx, loopIndex, []collector.RequestRecord{reqRecord})

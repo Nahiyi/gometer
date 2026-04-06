@@ -35,17 +35,8 @@ func New(timeoutMs int) *Client {
 }
 
 // DoRequest performs an HTTP request and returns the result
-func (c *Client) DoRequest(method, url string, sharedHeaders, userHeaders map[string]string, body string) *RequestResult {
+func (c *Client) DoRequest(method, url string, headers map[string]string, body string) *RequestResult {
 	start := time.Now()
-
-	// Merge headers: sharedHeaders + userHeaders (userHeaders take precedence)
-	headers := make(map[string]string)
-	for k, v := range sharedHeaders {
-		headers[k] = v
-	}
-	for k, v := range userHeaders {
-		headers[k] = v
-	}
 
 	// Build request
 	var reqBody io.Reader
@@ -57,8 +48,8 @@ func (c *Client) DoRequest(method, url string, sharedHeaders, userHeaders map[st
 	if err != nil {
 		return &RequestResult{
 			ResponseTimeMs: time.Since(start).Milliseconds(),
-			Success:       false,
-			Error:         fmt.Sprintf("failed to create request: %v", err),
+			Success:        false,
+			Error:          fmt.Sprintf("failed to create request: %v", err),
 		}
 	}
 
@@ -99,7 +90,7 @@ func (c *Client) DoRequest(method, url string, sharedHeaders, userHeaders map[st
 
 	result := &RequestResult{
 		ResponseStatus:  resp.StatusCode,
-		ResponseTimeMs: time.Since(start).Milliseconds(),
+		ResponseTimeMs:  time.Since(start).Milliseconds(),
 		ResponseHeaders: respHeaders,
 		Success:         success,
 	}

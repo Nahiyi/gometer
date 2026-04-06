@@ -314,16 +314,11 @@ defer cancel()
 req = req.WithContext(ctx)  // 请求绑定 context
 ```
 
-#### Header 合并策略
+#### Header 合并策略（调用方已合并好）
 ```go
-// sharedHeaders + userHeaders
-// userHeaders 优先级更高（后面覆盖前面）
-headers := make(map[string]string)
-for k, v := range sharedHeaders {
-    headers[k] = v
-}
-for k, v := range userHeaders {
-    headers[k] = v
+// headers 已经在 runThread 中合并好了，直接设置到请求
+for k, v := range headers {
+    req.Header.Set(k, v)
 }
 ```
 

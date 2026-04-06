@@ -27,7 +27,7 @@ func TestDoRequestGetSuccess(t *testing.T) {
 	defer server.Close()
 
 	client := New(5000)
-	result := client.DoRequest("GET", server.URL, nil, nil, "")
+	result := client.DoRequest("GET", server.URL, nil, "")
 
 	if !result.Success {
 		t.Errorf("Expected success=true, got false. Error: %s", result.Error)
@@ -52,11 +52,13 @@ func TestDoRequestPostWithBody(t *testing.T) {
 	defer server.Close()
 
 	client := New(5000)
-	sharedHeaders := map[string]string{"Content-Type": "application/x-www-form-urlencoded"}
-	userHeaders := map[string]string{"X-Custom-Header": "custom-value"}
+	headers := map[string]string{
+		"Content-Type":    "application/x-www-form-urlencoded",
+		"X-Custom-Header": "custom-value",
+	}
 	body := "data=test"
 
-	result := client.DoRequest("POST", server.URL, sharedHeaders, userHeaders, body)
+	result := client.DoRequest("POST", server.URL, headers, body)
 
 	if !result.Success {
 		t.Errorf("Expected success=true, got false. Error: %s", result.Error)
@@ -77,7 +79,7 @@ func TestDoRequestServerError(t *testing.T) {
 	defer server.Close()
 
 	client := New(5000)
-	result := client.DoRequest("GET", server.URL, nil, nil, "")
+	result := client.DoRequest("GET", server.URL, nil, "")
 
 	if result.Success {
 		t.Errorf("Expected success=false for 500 error, got true")
@@ -96,7 +98,7 @@ func TestDoRequestTimeout(t *testing.T) {
 
 	// Very short timeout
 	client := New(50)
-	result := client.DoRequest("GET", server.URL, nil, nil, "")
+	result := client.DoRequest("GET", server.URL, nil, "")
 
 	if result.Success {
 		t.Errorf("Expected success=false for timeout, got true")
@@ -108,7 +110,7 @@ func TestDoRequestTimeout(t *testing.T) {
 
 func TestDoRequestInvalidURL(t *testing.T) {
 	client := New(5000)
-	result := client.DoRequest("GET", "http://invalid-domain-that-does-not-exist.com", nil, nil, "")
+	result := client.DoRequest("GET", "http://invalid-domain-that-does-not-exist.com", nil, "")
 
 	if result.Success {
 		t.Errorf("Expected success=false for invalid URL, got true")
@@ -129,10 +131,12 @@ func TestDoRequestHeaderMerging(t *testing.T) {
 	defer server.Close()
 
 	client := New(5000)
-	sharedHeaders := map[string]string{"Content-Type": "application/json"}
-	userHeaders := map[string]string{"Authorization": "Bearer token123"}
+	headers := map[string]string{
+		"Content-Type":  "application/json",
+		"Authorization": "Bearer token123",
+	}
 
-	result := client.DoRequest("GET", server.URL, sharedHeaders, userHeaders, "")
+	result := client.DoRequest("GET", server.URL, headers, "")
 
 	if !result.Success {
 		t.Errorf("Expected success=true, got false. Error: %s", result.Error)
