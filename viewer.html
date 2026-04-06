@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoMeter Report Viewer</title>
+    <style>
+        :root {
+            --primary-color: #18A058;
+            --primary-light: #e8f5ee;
+            --bg-color: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --success-color: #18A058;
+            --error-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--bg-color);
+            padding: 20px 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: border-color 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-area p {
+            color: var(--text-secondary);
+        }
+
+        .upload-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #147a4a;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stat-card .value.error {
+            color: var(--error-color);
+        }
+
+        .stat-card .sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .content-panel {
+            background: var(--bg-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .request-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .request-table th,
+        .request-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .request-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .request-table tr:hover {
+            background: var(--primary-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.success {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .status-badge.error {
+            background: #fde8ea;
+            color: var(--error-color);
+        }
+
+        /* 模态框背景层 - 独立于 modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .modal-backdrop.active {
+            display: block;
+        }
+
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .detail-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background: var(--bg-color);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #fee2e2;
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--bg-secondary);
+        }
+
+        .detail-row .key {
+            width: 140px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .detail-row .value {
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .detail-row .value pre {
+            margin: 0;
+            font-size: 12px;
+            background: var(--bg-secondary);
+            padding: 8px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .detail-row .value .error-msg {
+            color: #dc3545;
+        }
+
+        .view-btn {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .view-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GoMeter Report Viewer</h1>
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept=".json">
+                <p>点击选择 JSON 报告文件，或拖拽到此处</p>
+                <span class="upload-btn">选择文件</span>
+            </div>
+        </div>
+
+        <div id="statsContainer" class="hidden">
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <div class="label">总请求数</div>
+                    <div class="value" id="totalRequests">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">成功率</div>
+                    <div class="value" id="successRate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">失败数</div>
+                    <div class="value error" id="failCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">平均响应时间</div>
+                    <div class="value" id="avgTime">0ms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">P90 响应时间</div>
+                    <div class="value" id="p90Time">0ms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">最大响应时间</div>
+                    <div class="value" id="maxTime">0ms</div>
+                </div>
+            </div>
+
+            <div class="content-panel">
+                <div class="panel-header">请求详情列表</div>
+                <table class="request-table">
+                    <thead>
+                        <tr>
+                            <th>线程</th>
+                            <th>循环</th>
+                            <th>请求</th>
+                            <th>URL</th>
+                            <th>方法</th>
+                            <th>状态</th>
+                            <th>响应时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框背景层 -->
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <!-- 模态框内容 -->
+    <div class="detail-modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>请求详情</span>
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReport = null;
+
+        // HTML 转义，防止 innerHTML 注入破坏 DOM 结构
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
+
+        // 文件上传事件绑定
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#18A058';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#e0e0e0';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#e0e0e0';
+            const file = e.dataTransfer.files[0];
+            if (file) loadFile(file);
+        });
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) loadFile(file);
+        });
+
+        function loadFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    currentReport = JSON.parse(e.target.result);
+                    renderReport(currentReport);
+                } catch (err) {
+                    alert('无效的 JSON 文件');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function renderReport(report) {
+            document.getElementById('statsContainer').classList.remove('hidden');
+
+            // 渲染统计面板
+            const summary = report.summary;
+            document.getElementById('totalRequests').textContent = summary.totalRequests;
+            document.getElementById('successRate').textContent = (summary.successRate * 100).toFixed(1) + '%';
+            document.getElementById('failCount').textContent = summary.failCount;
+            document.getElementById('avgTime').textContent = summary.avgResponseTimeMs.toFixed(1) + 'ms';
+            document.getElementById('p90Time').textContent = summary.p90ResponseTimeMs + 'ms';
+            document.getElementById('maxTime').textContent = summary.maxResponseTimeMs + 'ms';
+
+            // 渲染请求列表
+            const tbody = document.getElementById('requestTableBody');
+            tbody.innerHTML = '';
+
+            let rowIndex = 0;
+            report.threads.forEach(thread => {
+                thread.loopResults.forEach(loop => {
+                    loop.requests.forEach(req => {
+                        const tr = document.createElement('tr');
+                        const statusClass = req.success ? 'success' : 'error';
+                        const statusText = req.success ? '成功' : '失败';
+                        tr.innerHTML = `
+                            <td>${thread.threadId}</td>
+                            <td>${loop.loopIndex}</td>
+                            <td>${req.requestIndex}</td>
+                            <td>${escapeHtml(truncateUrl(req.url))}</td>
+                            <td>${escapeHtml(req.method)}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>${req.responseTimeMs}ms</td>
+                            <td><button class="view-btn" data-index="${rowIndex}">查看</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                        rowIndex++;
+                    });
+                });
+            });
+
+            // 存储所有请求数据用于详情查看
+            window.allRequests = [];
+            report.threads.forEach(thread => {
+                thread.loopResults.forEach(loop => {
+                    loop.requests.forEach(req => {
+                        window.allRequests.push({ thread, loop, req });
+                    });
+                });
+            });
+
+            // 绑定查看按钮事件（使用事件委托）
+            tbody.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index, 10);
+                    showDetail(index);
+                });
+            });
+        }
+
+        function truncateUrl(url) {
+            if (url.length > 50) {
+                return url.substring(0, 50) + '...';
+            }
+            return url;
+        }
+
+        function showDetail(index) {
+            const { thread, loop, req } = window.allRequests[index];
+            const modal = document.getElementById('detailModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const body = document.getElementById('modalBody');
+
+            body.innerHTML = `
+                <div class="detail-section">
+                    <h4>基本信息</h4>
+                    <div class="detail-row"><span class="key">线程ID</span><span class="value">${thread.threadId}</span></div>
+                    <div class="detail-row"><span class="key">循环次数</span><span class="value">${loop.loopIndex}</span></div>
+                    <div class="detail-row"><span class="key">请求索引</span><span class="value">${req.requestIndex}</span></div>
+                </div>
+                <div class="detail-section">
+                    <h4>请求信息</h4>
+                    <div class="detail-row"><span class="key">URL</span><span class="value">${escapeHtml(req.url)}</span></div>
+                    <div class="detail-row"><span class="key">Method</span><span class="value">${escapeHtml(req.method)}</span></div>
+                    <div class="detail-row"><span class="key">请求Headers</span><span class="value"><pre>${escapeHtml(JSON.stringify(req.requestHeaders, null, 2))}</pre></span></div>
+                    <div class="detail-row"><span class="key">请求Body</span><span class="value">${escapeHtml(req.requestBody) || '(空)'}</span></div>
+                </div>
+                <div class="detail-section">
+                    <h4>响应信息</h4>
+                    <div class="detail-row"><span class="key">状态码</span><span class="value">${req.responseStatus}</span></div>
+                    <div class="detail-row"><span class="key">响应时间</span><span class="value">${req.responseTimeMs}ms</span></div>
+                    <div class="detail-row"><span class="key">响应Headers</span><span class="value"><pre>${escapeHtml(JSON.stringify(req.responseHeaders, null, 2))}</pre></span></div>
+                    <div class="detail-row"><span class="key">成功</span><span class="value">${req.success ? '是' : '否'}</span></div>
+                    ${req.error ? `<div class="detail-row"><span class="key">错误信息</span><span class="value error-msg">${escapeHtml(req.error)}</span></div>` : ''}
+                </div>
+            `;
+
+            modal.classList.add('active');
+            backdrop.classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailModal').classList.remove('active');
+            document.getElementById('modalBackdrop').classList.remove('active');
+        }
+
+        // 关闭按钮事件
+        document.getElementById('modalCloseBtn').addEventListener('click', closeDetail);
+
+        // 点击背景层关闭
+        document.getElementById('modalBackdrop').addEventListener('click', closeDetail);
+
+        // ESC 键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDetail();
+            }
+        });
+    </script>
+</body>
+</html>
