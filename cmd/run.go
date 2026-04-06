@@ -41,16 +41,19 @@ func runPressureTest(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("threads must be > 0")
 	}
 
-	// Validate user count
-	if len(cfg.Users) < threads {
+	// If users are configured, validate count
+	if len(cfg.Users) > 0 && len(cfg.Users) < threads {
 		return fmt.Errorf("insufficient user configs: %d users for %d threads", len(cfg.Users), threads)
 	}
 
 	// Create HTTP client
 	client := httpclient.New(requestTimeout)
 
-	// Create loader
-	userLoader := loader.New(cfg.Users)
+	// Create loader (only if users are configured)
+	var userLoader *loader.Loader
+	if len(cfg.Users) > 0 {
+		userLoader = loader.New(cfg.Users)
+	}
 
 	// Create collector
 	coll := collector.New()
@@ -110,7 +113,12 @@ afterLoop:
 
 func runThread(threadIndex int, cfg *config.Config, client *httpclient.Client, userLoader *loader.Loader, coll *collector.Collector, loopCount int) {
 	idx := coll.NewThreadRecord(threadIndex)
-	userConfig := userLoader.GetUserConfig(threadIndex)
+
+	// Get user config if available
+	var userConfig config.UserConfig
+	if userLoader != nil {
+		userConfig = userLoader.GetUserConfig(threadIndex)
+	}
 
 	for loopIndex := 1; loopIndex <= loopCount; loopIndex++ {
 		// Build merged headers (shared + user-specific)
