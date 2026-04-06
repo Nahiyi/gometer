@@ -1,0 +1,24 @@
+{
+  "request": {
+    "url": "http://example.com/api",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{}"
+  },
+  "users": [
+    {
+      "headers": {
+        "token": "user-token-1",
+        "x-user-id": "1001"
+      }
+    },
+    {
+      "headers": {
+        "token": "user-token-2",
+        "x-user-id": "1002"
+      }
+    }
+  ]
+}
