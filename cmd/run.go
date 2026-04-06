@@ -120,7 +120,7 @@ func runThread(threadIndex int, cfg *config.Config, client *httpclient.Client, u
 		userConfig = userLoader.GetUserConfig(threadIndex)
 	}
 
-	for loopIndex := 1; loopIndex <= loopCount; loopIndex++ {
+	for loopIndex := 0; loopIndex < loopCount; loopIndex++ {
 		// Build merged headers (shared + user-specific)
 		mergedHeaders := make(map[string]string)
 		for k, v := range cfg.Request.Headers {
