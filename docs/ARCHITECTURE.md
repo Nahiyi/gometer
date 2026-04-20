@@ -1,12 +1,12 @@
-# GoMeter 项目架构文档
+# GMeter 项目架构文档
 
-> 本文档用于帮助理解 gometer 项目的代码结构和设计思路。
+> 本文档用于帮助理解 gmeter 项目的代码结构和设计思路。
 
 ---
 
 ## 1. 项目概览
 
-**gometer** 是一个命令行 HTTP 压测工具，用于学习 Go 语言标准库。
+**gmeter** 是一个命令行 HTTP 压测工具，用于学习 Go 语言标准库。
 
 **核心功能：**
 - 支持 GET/POST 等 HTTP 方法
@@ -33,7 +33,7 @@
 ## 3. 项目结构
 
 ```
-gometer/
+gmeter/
 ├── main.go                      # 程序入口
 ├── cmd/
 │   ├── root.go                 # CLI 根命令
@@ -58,7 +58,7 @@ gometer/
 ```go
 package main
 
-import "gometer/cmd"
+import "gmeter/cmd"
 
 func main() {
     cmd.Execute()
@@ -81,7 +81,7 @@ cobra 是 Go 中最流行的 CLI 框架，使用方式：
 ```go
 // 定义一个命令
 var rootCmd = &cobra.Command{
-    Use:   "gometer",
+    Use:   "gmeter",
     Short: "a pressure testing tool",
 }
 
@@ -538,7 +538,7 @@ err = os.WriteFile(path, data, 0644)
 sequenceDiagram
     autonumber
     participant User as 用户
-    participant CLI as gometer CLI
+    participant CLI as gmeter CLI
     participant RunCmd as cmd/run.go
     participant Config as config.Load()
     participant HTTPClient as httpclient.Client
@@ -547,7 +547,7 @@ sequenceDiagram
     participant Reporter as reporter
     participant Goroutine as goroutine线程
 
-    User->>CLI: gometer run -n 100 -t 10 -c req.json
+    User->>CLI: gmeter run -n 100 -t 10 -c req.json
 
     CLI->>RunCmd: runPressureTest()
     RunCmd->>Config: Load(configFile)
@@ -598,7 +598,7 @@ sequenceDiagram
 ```
 
 **时序图说明：**
-1. 用户执行 `gometer run` 命令，CLI 框架将控制权交给 `runPressureTest()`
+1. 用户执行 `gmeter run` 命令，CLI 框架将控制权交给 `runPressureTest()`
 2. 首先加载配置文件，解析出共享请求配置和用户配置数组
 3. 创建 HTTP 客户端、用户加载器、结果收集器
 4. 如果设置了 `max-duration`，启动后台 goroutine 进行超时监控

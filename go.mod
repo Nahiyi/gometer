@@ -1,4 +1,4 @@
-module gometer
+module gmeter
 
 go 1.25.1
 

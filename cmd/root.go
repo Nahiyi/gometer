@@ -18,9 +18,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "gometer",
-	Short: "gometer is a HTTP pressure testing tool",
-	Long:  `gometer is a CLI HTTP pressure testing tool for learning Go standard library.`,
+	Use:   "gmeter",
+	Short: "gmeter is a HTTP pressure testing tool",
+	Long:  `gmeter is a CLI HTTP pressure testing tool for learning Go standard library.`,
 }
 
 func Execute() {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"gometer/internal/collector"
+	"gmeter/internal/collector"
 )
 
 func TestGenerateEmptyRecords(t *testing.T) {

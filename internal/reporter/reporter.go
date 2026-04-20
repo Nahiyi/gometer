@@ -6,24 +6,24 @@ import (
 	"os"
 	"sort"
 
-	"gometer/internal/collector"
+	"gmeter/internal/collector"
 )
 
 // Summary represents aggregated statistics
 type Summary struct {
-	TotalThreads        int     `json:"totalThreads"`
-	TotalLoops          int     `json:"totalLoops"`
-	TotalRequests       int     `json:"totalRequests"`
-	SuccessCount        int     `json:"successCount"`
-	FailCount           int     `json:"failCount"`
-	SuccessRate         float64 `json:"successRate"`
-	DurationMs          int64   `json:"durationMs"`
-	AvgResponseTimeMs   float64 `json:"avgResponseTimeMs"`
-	MinResponseTimeMs   int64   `json:"minResponseTimeMs"`
-	MaxResponseTimeMs   int64   `json:"maxResponseTimeMs"`
-	P50ResponseTimeMs   int64   `json:"p50ResponseTimeMs"`
-	P90ResponseTimeMs   int64   `json:"p90ResponseTimeMs"`
-	P99ResponseTimeMs   int64   `json:"p99ResponseTimeMs"`
+	TotalThreads      int     `json:"totalThreads"`
+	TotalLoops        int     `json:"totalLoops"`
+	TotalRequests     int     `json:"totalRequests"`
+	SuccessCount      int     `json:"successCount"`
+	FailCount         int     `json:"failCount"`
+	SuccessRate       float64 `json:"successRate"`
+	DurationMs        int64   `json:"durationMs"`
+	AvgResponseTimeMs float64 `json:"avgResponseTimeMs"`
+	MinResponseTimeMs int64   `json:"minResponseTimeMs"`
+	MaxResponseTimeMs int64   `json:"maxResponseTimeMs"`
+	P50ResponseTimeMs int64   `json:"p50ResponseTimeMs"`
+	P90ResponseTimeMs int64   `json:"p90ResponseTimeMs"`
+	P99ResponseTimeMs int64   `json:"p99ResponseTimeMs"`
 }
 
 // Report represents the full JSON report
@@ -69,19 +69,19 @@ func Generate(records []collector.ThreadRecord, durationMs int64) Report {
 	}
 
 	summary := Summary{
-		TotalThreads:       len(records),
-		TotalLoops:         totalLoops,
-		TotalRequests:      totalRequests,
-		SuccessCount:       successCount,
-		FailCount:          failCount,
-		SuccessRate:        0,
-		DurationMs:         durationMs,
-		AvgResponseTimeMs:  avgTime,
-		MinResponseTimeMs:  minTime,
-		MaxResponseTimeMs:  maxTime,
-		P50ResponseTimeMs:  percentile(allResponseTimes, 50),
-		P90ResponseTimeMs:  percentile(allResponseTimes, 90),
-		P99ResponseTimeMs:  percentile(allResponseTimes, 99),
+		TotalThreads:      len(records),
+		TotalLoops:        totalLoops,
+		TotalRequests:     totalRequests,
+		SuccessCount:      successCount,
+		FailCount:         failCount,
+		SuccessRate:       0,
+		DurationMs:        durationMs,
+		AvgResponseTimeMs: avgTime,
+		MinResponseTimeMs: minTime,
+		MaxResponseTimeMs: maxTime,
+		P50ResponseTimeMs: percentile(allResponseTimes, 50),
+		P90ResponseTimeMs: percentile(allResponseTimes, 90),
+		P99ResponseTimeMs: percentile(allResponseTimes, 99),
 	}
 
 	if totalRequests > 0 {

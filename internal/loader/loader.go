@@ -1,7 +1,7 @@
 package loader
 
 import (
-	"gometer/internal/config"
+	"gmeter/internal/config"
 )
 
 // Loader is responsible for loading user configurations for threads

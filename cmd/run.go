@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"gometer/internal/collector"
-	"gometer/internal/config"
-	"gometer/internal/httpclient"
-	"gometer/internal/loader"
-	"gometer/internal/reporter"
+	"gmeter/internal/collector"
+	"gmeter/internal/config"
+	"gmeter/internal/httpclient"
+	"gmeter/internal/loader"
+	"gmeter/internal/reporter"
 
 	"github.com/spf13/cobra"
 )

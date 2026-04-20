@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gometer/cmd"
+	"gmeter/cmd"
 )
 
 func main() {

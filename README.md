@@ -1,12 +1,12 @@
-# GoMeter
+# GMeter
 
 命令行 HTTP 压测工具，用于学习 Go 语言标准库、命令行程序以及并发知识。
 
 ## 安装
 
 ```bash
-git clone https://github.com/Nahiyi/gometer
-cd gometer
+git clone https://github.com/Nahiyi/gmeter
+cd gmeter
 go install
 ```
 
@@ -24,7 +24,7 @@ cp req.json.example req.json
 # 编辑 req.json 中的 URL 和请求参数
 
 # 2. 运行压测
-gometer run -n 10 -t 5 -l 3 -c ./req.json -o ./report.json
+gmeter run -n 10 -t 5 -l 3 -c ./req.json -o ./report.json
 
 # 3. 查看报告
 # 用浏览器打开 viewer.html，拖入 report.json 查看
@@ -33,7 +33,7 @@ gometer run -n 10 -t 5 -l 3 -c ./req.json -o ./report.json
 ## 命令行参数
 
 ```bash
-gometer run <options>
+gmeter run <options>
 ```
 
 | 参数 | 短参数 | 说明 | 默认值 |

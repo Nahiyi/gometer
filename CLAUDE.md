@@ -1,17 +1,17 @@
-# GoMeter
+# GMeter
 
 命令行 HTTP 压测/接口探测工具，用于学习 Go 语言标准库（HTTP、flag、并发控制等）。
 
 ## 工具信息
 
-- **项目名/工具名**: `gometer`
+- **项目名/工具名**: `gmeter`
 - **定位**: 压测工具 / HTTP 接口探测客户端
 - **Go 版本**: 1.25.1
 
 ## 命令行接口
 
 ```bash
-gometer run [参数]
+gmeter run [参数]
 
 核心参数：
   -n, --threads        线程数（必填）
@@ -135,7 +135,7 @@ gometer run [参数]
 ## 模块划分
 
 ```
-gometer/
+gmeter/
 ├── cmd/
 │   ├── root.go           # CLI 入口，flag 定义
 │   └── run.go            # run 子命令，整合所有模块执行压测

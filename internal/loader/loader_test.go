@@ -3,7 +3,7 @@ package loader
 import (
 	"testing"
 
-	"gometer/internal/config"
+	"gmeter/internal/config"
 )
 
 func TestNew(t *testing.T) {
