@@ -147,6 +147,7 @@ func runThread(threadIndex int, cfg *config.Config, client *httpclient.Client, u
 			ResponseStatus:  result.ResponseStatus,
 			ResponseTimeMs:  result.ResponseTimeMs,
 			ResponseHeaders: result.ResponseHeaders,
+			ResponseBody:    result.ResponseBody,
 			Success:         result.Success,
 			Error:           result.Error,
 		}

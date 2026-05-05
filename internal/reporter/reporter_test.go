@@ -102,6 +102,20 @@ func TestPercentileEmpty(t *testing.T) {
 	}
 }
 
+func TestPercentileSingleElement(t *testing.T) {
+	sorted := []int64{42}
+
+	if p50 := percentile(sorted, 50); p50 != 42 {
+		t.Errorf("Expected P50=42, got %d", p50)
+	}
+	if p90 := percentile(sorted, 90); p90 != 42 {
+		t.Errorf("Expected P90=42, got %d", p90)
+	}
+	if p99 := percentile(sorted, 99); p99 != 42 {
+		t.Errorf("Expected P99=42, got %d", p99)
+	}
+}
+
 func TestWriteToStdout(t *testing.T) {
 	report := Report{
 		Summary: Summary{TotalRequests: 10},

@@ -14,6 +14,7 @@ type RequestRecord struct {
 	ResponseStatus  int               `json:"responseStatus"`
 	ResponseTimeMs  int64             `json:"responseTimeMs"`
 	ResponseHeaders map[string]string `json:"responseHeaders"`
+	ResponseBody    string            `json:"responseBody"`
 	Success         bool              `json:"success"`
 	Error           string            `json:"error"`
 }

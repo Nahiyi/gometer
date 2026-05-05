@@ -98,6 +98,9 @@ func percentile(sorted []int64, p int) int64 {
 	if len(sorted) == 0 {
 		return 0
 	}
+	if len(sorted) == 1 {
+		return sorted[0]
+	}
 	index := (len(sorted)-1)*p/100 + 1
 	if index >= len(sorted) {
 		index = len(sorted) - 1
