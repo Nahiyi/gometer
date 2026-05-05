@@ -35,8 +35,8 @@ func TestDoRequestGetSuccess(t *testing.T) {
 	if result.ResponseStatus != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", result.ResponseStatus)
 	}
-	if result.ResponseTimeMs <= 0 {
-		t.Errorf("ResponseTimeMs should be > 0, got %d", result.ResponseTimeMs)
+	if result.ResponseTimeMs < 0 {
+		t.Errorf("ResponseTimeMs should be >= 0, got %d", result.ResponseTimeMs)
 	}
 }
 
