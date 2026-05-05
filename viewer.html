@@ -527,6 +527,7 @@
                     <div class="detail-row"><span class="key">状态码</span><span class="value">${req.responseStatus}</span></div>
                     <div class="detail-row"><span class="key">响应时间</span><span class="value">${req.responseTimeMs}ms</span></div>
                     <div class="detail-row"><span class="key">响应Headers</span><span class="value"><pre>${escapeHtml(JSON.stringify(req.responseHeaders, null, 2))}</pre></span></div>
+                    <div class="detail-row"><span class="key">响应Body</span><span class="value"><pre>${escapeHtml(req.responseBody) || '(空)'}</pre></span></div>
                     <div class="detail-row"><span class="key">成功</span><span class="value">${req.success ? '是' : '否'}</span></div>
                     ${req.error ? `<div class="detail-row"><span class="key">错误信息</span><span class="value error-msg">${escapeHtml(req.error)}</span></div>` : ''}
                 </div>

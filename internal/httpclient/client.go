@@ -14,6 +14,7 @@ type RequestResult struct {
 	ResponseStatus  int
 	ResponseTimeMs  int64
 	ResponseHeaders map[string]string
+	ResponseBody    string
 	Success         bool
 	Error           string
 }
@@ -92,6 +93,7 @@ func (c *Client) DoRequest(method, url string, headers map[string]string, body s
 		ResponseStatus:  resp.StatusCode,
 		ResponseTimeMs:  time.Since(start).Milliseconds(),
 		ResponseHeaders: respHeaders,
+		ResponseBody:    string(respBody),
 		Success:         success,
 	}
 

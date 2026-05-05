@@ -44,8 +44,6 @@ Thumbs.db
 tmp/
 temp/
 
-# Go modules cache
-go.sum
 
 # Chapter-specific build files
 */bin/
